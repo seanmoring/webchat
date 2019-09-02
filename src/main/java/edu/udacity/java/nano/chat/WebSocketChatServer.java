@@ -40,11 +40,22 @@ public class WebSocketChatServer {
         onlineSessions.put(session.getId(), session);
         Message msg = new Message();
         msg.setOnlineCount(onlineSessions.size());
-        try {
-            session.getBasicRemote().sendText(JSON.toJSONString(msg));//.sendObject(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } //catch (EncodeException e) {
+        msg.setType("ENTER");
+
+        Iterator i = onlineSessions.keySet().iterator();
+        while (i.hasNext()) {
+            try {
+                onlineSessions.get(i.next()).getBasicRemote().sendText(JSON.toJSONString(msg));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //try {
+        //    session.getBasicRemote().sendText(JSON.toJSONString(msg));//.sendObject(msg);
+        //} catch (IOException e) {
+        //    e.printStackTrace();
+        //} //catch (EncodeException e) {
             //e.printStackTrace();
         //}
     }
@@ -78,6 +89,17 @@ public class WebSocketChatServer {
         //TODO: add close connection.
         System.out.println("onClose has been called");
         onlineSessions.remove(session.getId());
+        Message msg = new Message();
+        msg.setOnlineCount(onlineSessions.size());
+        msg.setType("LEAVE");
+        Iterator i = onlineSessions.keySet().iterator();
+        while (i.hasNext()) {
+            try {
+                onlineSessions.get(i.next()).getBasicRemote().sendText(JSON.toJSONString(msg));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

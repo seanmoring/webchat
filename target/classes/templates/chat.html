@@ -54,10 +54,10 @@
                 <div class="mdui-chip">
                     <span class="mdui-chip-icon mdui-color-blue">
                         <i class="mdui-icon material-icons">face</i></span>
-                    <span class="mdui-chip-title">Online Users</span>
+                    <span class="mdui-chip-title chat-num" id="onlineCount">0</t></span>
 
                     <!-- TODO: check online number num -->
-                    <!-- $(.chat-num) -->
+
                 </div>
                 <!-- TODO: add a message container -->
                 <div class="message-container"></div>
@@ -105,7 +105,7 @@
                     '</div></div>');
             }
             $('.chat-num').text(message.onlineCount);
-            document.getElementById(".chat-num").innerHTML = message.onLineCount;
+
             var $cards = $messageContainer.children('.mdui-card:visible').toArray();
             if ($cards.length > 5) {
                 $cards.forEach(function (item, index) {
