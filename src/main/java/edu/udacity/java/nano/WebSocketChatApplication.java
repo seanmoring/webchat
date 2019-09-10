@@ -19,7 +19,7 @@ public class WebSocketChatApplication {
 
     /**
      * Login Page
-     */
+    mvn  */
     @GetMapping("/")
     public ModelAndView login() {
         return new ModelAndView("/login");

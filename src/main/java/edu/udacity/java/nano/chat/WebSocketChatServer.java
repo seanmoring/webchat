@@ -27,7 +27,16 @@ public class WebSocketChatServer {
     private static Map<String, Session> onlineSessions = new ConcurrentHashMap<>();
 
     private static void sendMessageToAll(String msg) {
+
         //TODO: add send message method.
+        Iterator i = onlineSessions.keySet().iterator();
+        while (i.hasNext()) {
+            try {
+                onlineSessions.get(i.next()).getBasicRemote().sendText(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -36,28 +45,22 @@ public class WebSocketChatServer {
     @OnOpen
     public void onOpen(Session session) {
         //TODO: add on open connection.
-        System.out.println("onOpen has been called");
         onlineSessions.put(session.getId(), session);
+
         Message msg = new Message();
         msg.setOnlineCount(onlineSessions.size());
         msg.setType("ENTER");
 
-        Iterator i = onlineSessions.keySet().iterator();
+        sendMessageToAll(JSON.toJSONString(msg));
+
+        /*Iterator i = onlineSessions.keySet().iterator();
         while (i.hasNext()) {
             try {
                 onlineSessions.get(i.next()).getBasicRemote().sendText(JSON.toJSONString(msg));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-
-        //try {
-        //    session.getBasicRemote().sendText(JSON.toJSONString(msg));//.sendObject(msg);
-        //} catch (IOException e) {
-        //    e.printStackTrace();
-        //} //catch (EncodeException e) {
-            //e.printStackTrace();
-        //}
+        }*/
     }
 
     /**
@@ -66,11 +69,14 @@ public class WebSocketChatServer {
     @OnMessage
     public void onMessage(Session session, String jsonStr) {
         //TODO: add send message.
-        //session.
-        System.out.println("String received = " + jsonStr);
+
         Message m = JSON.parseObject(jsonStr, Message.class);
         m.setOnlineCount(onlineSessions.size());
         m.setType("SPEAK");
+
+        sendMessageToAll(JSON.toJSONString(m));
+
+        /*
         Iterator i = onlineSessions.keySet().iterator();
         while (i.hasNext()) {
             try {
@@ -79,6 +85,8 @@ public class WebSocketChatServer {
                 e.printStackTrace();
             }
         }
+        */
+
     }
 
     /**
@@ -87,11 +95,14 @@ public class WebSocketChatServer {
     @OnClose
     public void onClose(Session session) {
         //TODO: add close connection.
-        System.out.println("onClose has been called");
+
         onlineSessions.remove(session.getId());
         Message msg = new Message();
         msg.setOnlineCount(onlineSessions.size());
         msg.setType("LEAVE");
+
+        sendMessageToAll(JSON.toJSONString(msg));
+        /*
         Iterator i = onlineSessions.keySet().iterator();
         while (i.hasNext()) {
             try {
@@ -100,6 +111,7 @@ public class WebSocketChatServer {
                 e.printStackTrace();
             }
         }
+         */
     }
 
     /**
